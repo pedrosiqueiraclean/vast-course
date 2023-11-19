@@ -1,17 +1,13 @@
 import { useState, useRef, useEffect, useCallback } from "react";
+import { convertOffsetToSeconds } from "../utils/utils";
 
 function useAdPlayback(vastParsed, videoRef) {
   const [adMedia, setAdMedia] = useState(null);
   const [isAdPlaying, setIsAdPlaying] = useState(false);
   const [showSkipButton, setShowSkipButton] = useState(false);
   const [pausedTime, setPausedTime] = useState(0);
-  const [currentAdIndex, setCurrentAdIndex] = useState(null);
+  const [currentCreative, setCurrentCreative] = useState(null);
   const skipButtonTimerRef = useRef(null);
-
-  const convertOffsetToSeconds = (offset) => {
-    const [hours, minutes, seconds] = offset.split(":").map(parseFloat);
-    return hours * 3600 + minutes * 60 + seconds;
-  };
 
   const sendTrackingRequest = (url) => {
     console.log(`Sending tracking request to ${url}`);
@@ -33,11 +29,12 @@ function useAdPlayback(vastParsed, videoRef) {
     [vastParsed.trackingURLs]
   );
 
-  const playAd = (adIndex) => {
-    if (vastParsed.mediaFileURLs.length > adIndex) {
-      setCurrentAdIndex(adIndex);
-      setPausedTime(videoRef.current.currentTime + 1);
-      setAdMedia(vastParsed.mediaFileURLs[adIndex]);
+  const handlePlayAd = (adIndex) => {
+    if (vastParsed.creativeDetails.length > adIndex) {
+      const selectedCreative = vastParsed.creativeDetails[adIndex];
+      setCurrentCreative(selectedCreative);
+      setPausedTime(videoRef.current.currentTime);
+      setAdMedia(selectedCreative.mediaFileDetails);
       setIsAdPlaying(true);
       setShowSkipButton(false);
       sendTrackingRequestForAdEvent("start", videoRef.current.currentTime);
@@ -53,11 +50,11 @@ function useAdPlayback(vastParsed, videoRef) {
     videoRef.current.play();
   };
 
-  const skipAd = () => {
+  const handleSkipAd = () => {
     sendTrackingRequestForAdEvent("skipped", videoRef.current.currentTime);
     setShowSkipButton(false);
     setIsAdPlaying(false);
-    setCurrentAdIndex(null);
+    setCurrentCreative(null);
     setTimeout(() => {
       if (videoRef.current) {
         resumeVideoFromPausedTime();
@@ -66,11 +63,11 @@ function useAdPlayback(vastParsed, videoRef) {
   };
 
   useEffect(() => {
-    if (!isAdPlaying && currentAdIndex !== null) {
+    if (!isAdPlaying && currentCreative !== null) {
       sendTrackingRequestForAdEvent("complete", videoRef.current.currentTime);
-      setCurrentAdIndex(null);
+      setCurrentCreative(null);
     }
-  }, [isAdPlaying, currentAdIndex, sendTrackingRequestForAdEvent, videoRef]);
+  }, [isAdPlaying, currentCreative, sendTrackingRequestForAdEvent, videoRef]);
 
   useEffect(() => {
     return () => {
@@ -85,12 +82,11 @@ function useAdPlayback(vastParsed, videoRef) {
     isAdPlaying,
     showSkipButton,
     pausedTime,
-    playAd,
-    skipAd,
+    currentCreative,
+    handlePlayAd,
+    handleSkipAd,
     setIsAdPlaying,
     setShowSkipButton,
-    setPausedTime,
-    resumeVideoFromPausedTime,
   };
 }
 

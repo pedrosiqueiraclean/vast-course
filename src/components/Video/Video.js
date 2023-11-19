@@ -1,10 +1,4 @@
-const Video = ({
-  videoRef,
-  currentMedia,
-  onVideoLoadedMetadata,
-  onTimeUpdate,
-  onVideoEnd,
-}) => (
+const Video = ({ videoRef, currentMedia, onTimeUpdate, onVideoEnd }) => (
   <video
     ref={videoRef}
     src={currentMedia.url}
@@ -15,7 +9,6 @@ const Video = ({
     aria-label="video-player"
     controlsList="nofullscreen"
     muted={true}
-    onLoadedMetadata={onVideoLoadedMetadata}
     onTimeUpdate={onTimeUpdate}
     onEnded={onVideoEnd}
   />
