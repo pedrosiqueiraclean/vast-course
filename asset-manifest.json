@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/vast-course/static/css/main.24f1134d.css",
-    "main.js": "/vast-course/static/js/main.615ac862.js",
+    "main.css": "/vast-course/static/css/main.ce61bcbc.css",
+    "main.js": "/vast-course/static/js/main.3ffb9d7e.js",
     "static/js/787.75262d48.chunk.js": "/vast-course/static/js/787.75262d48.chunk.js",
     "index.html": "/vast-course/index.html",
-    "main.24f1134d.css.map": "/vast-course/static/css/main.24f1134d.css.map",
-    "main.615ac862.js.map": "/vast-course/static/js/main.615ac862.js.map",
+    "main.ce61bcbc.css.map": "/vast-course/static/css/main.ce61bcbc.css.map",
+    "main.3ffb9d7e.js.map": "/vast-course/static/js/main.3ffb9d7e.js.map",
     "787.75262d48.chunk.js.map": "/vast-course/static/js/787.75262d48.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.24f1134d.css",
-    "static/js/main.615ac862.js"
+    "static/css/main.ce61bcbc.css",
+    "static/js/main.3ffb9d7e.js"
   ]
 }
