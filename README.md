@@ -1,5 +1,7 @@
 # VAST Video Player
 
+![VAST Video Player](/public/screenshot.png)
+
 ## Introduction
 
 VAST Video Player is an innovative React-based web application designed to seamlessly integrate video ads into video playback. It uses the Video Ad Serving Template (VAST) format to manage and display video ads, providing a smooth and engaging user experience.
