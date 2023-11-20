@@ -47,38 +47,9 @@ export function parseVAST(vastXML) {
     return acc;
   }, []);
 
-  // Extract AdVerifications
-  const adVerifications = xmlDoc.querySelectorAll(
-    "AdVerifications > Verification"
-  );
-
-  const adVerificationURLs = Array.from(adVerifications).map(
-    (verification) => ({
-      vendor: verification.getAttribute("vendor"),
-      javascriptResource: verification
-        .querySelector("JavaScriptResource")
-        ?.textContent.trim(),
-      flashResource: verification
-        .querySelector("FlashResource")
-        ?.textContent.trim(),
-      viewableImpression: verification
-        .querySelector("ViewableImpression")
-        ?.textContent.trim(),
-    })
-  );
-
-  // Extract Category
-  const categoryElements = xmlDoc.querySelectorAll("Category");
-  const categories = Array.from(categoryElements).map((category) => ({
-    authority: category.getAttribute("authority"),
-    value: category.textContent.trim(),
-  }));
-
   return {
     creativeDetails,
     trackingURLs,
-    adVerificationURLs,
-    categories,
   };
 }
 

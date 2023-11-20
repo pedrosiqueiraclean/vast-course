@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { convertOffsetToSeconds } from "../utils/utils";
+import { convertOffsetToSeconds, videoToPlay } from "../utils/utils";
 
 function useAdPlayback(vastParsed, videoRef) {
   const [adMedia, setAdMedia] = useState(null);
@@ -7,6 +7,7 @@ function useAdPlayback(vastParsed, videoRef) {
   const [showSkipButton, setShowSkipButton] = useState(false);
   const [pausedTime, setPausedTime] = useState(0);
   const [currentCreative, setCurrentCreative] = useState(null);
+  const [currentMedia, setCurrentMedia] = useState(null);
   const skipButtonTimerRef = useRef(null);
 
   const sendTrackingRequest = (url) => {
@@ -46,8 +47,12 @@ function useAdPlayback(vastParsed, videoRef) {
   };
 
   const resumeVideoFromPausedTime = () => {
-    videoRef.current.currentTime = pausedTime;
-    videoRef.current.play();
+    setTimeout(() => {
+      if (videoRef.current) {
+        videoRef.current.currentTime = pausedTime;
+        videoRef.current.play();
+      }
+    }, 1);
   };
 
   const handleSkipAd = () => {
@@ -55,11 +60,31 @@ function useAdPlayback(vastParsed, videoRef) {
     setShowSkipButton(false);
     setIsAdPlaying(false);
     setCurrentCreative(null);
-    setTimeout(() => {
-      if (videoRef.current) {
-        resumeVideoFromPausedTime();
-      }
-    }, 1);
+    resumeVideoFromPausedTime();
+  };
+
+  const onTimeUpdate = (event) => {
+    const currentTime = event.target.currentTime;
+
+    if (!isAdPlaying) {
+      vastParsed.creativeDetails.forEach((creative, index) => {
+        const offsetSeconds = convertOffsetToSeconds(creative.offset);
+        if (currentTime >= offsetSeconds && !creative.hasPlayed) {
+          creative.hasPlayed = true;
+          videoRef.current.pause();
+          handlePlayAd(index);
+        }
+      });
+    }
+  };
+
+  const onVideoEnd = () => {
+    if (isAdPlaying) {
+      setIsAdPlaying(false);
+      setCurrentMedia(videoToPlay);
+
+      resumeVideoFromPausedTime();
+    }
   };
 
   useEffect(() => {
@@ -81,12 +106,13 @@ function useAdPlayback(vastParsed, videoRef) {
     adMedia,
     isAdPlaying,
     showSkipButton,
-    pausedTime,
     currentCreative,
-    handlePlayAd,
-    handleSkipAd,
-    setIsAdPlaying,
+    currentMedia,
+    setCurrentMedia,
     setShowSkipButton,
+    handleSkipAd,
+    onTimeUpdate,
+    onVideoEnd,
   };
 }
 
